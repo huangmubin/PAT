@@ -798,3 +798,52 @@ int main() {
 > 输出例子:
 
 94.50
+
+## C++
+
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+struct Mooncake {
+    int inventory, total_price;
+    double unit_price;
+} cakes[1000];
+
+bool cmp(Mooncake a, Mooncake b) {
+    return a.unit_price > b.unit_price;
+}
+
+int main(int argc, const char * argv[]) {
+    // 输入
+    int cake_types, max_need;
+    cin >> cake_types >> max_need;
+    for (int i = 0; i < cake_types; i++) {
+        cin >> cakes[i].inventory;
+    }
+    for (int i = 0; i < cake_types; i++) {
+        cin >> cakes[i].total_price;
+        cakes[i].unit_price = (double)cakes[i].total_price / (double)cakes[i].inventory;
+    }
+    sort(cakes, cakes + cake_types, cmp);
+    
+    // 计算
+    double income = 0;
+    int i = 0;
+    while (max_need > 0) {
+        if (cakes[i].inventory > max_need) {
+            income = income + cakes[i].unit_price * (double)max_need;
+            max_need = 0;
+        } else {
+            income += (double)cakes[i].total_price;
+            max_need -= cakes[i].inventory;
+        }
+        i++;
+    }
+    
+    // 输出
+    printf("%.2f\n", income);
+    return 0;
+}
+```

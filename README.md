@@ -902,3 +902,69 @@ int main(int argc, const char * argv[]) {
 }
 ```
 
+# 1012 D进制的A+B (20)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB
+
+> 题目描述
+
+输入两个非负10进制整数A和B(<=2^30-1)，输出A+B的D (1 < D <= 10)进制数。
+
+> 输入描述:
+
+输入在一行中依次给出3个整数A、B和D。
+
+> 输出描述:
+
+输出A+B的D进制数。
+
+> 输入例子:
+
+123 456 8
+
+> 输出例子:
+
+1103
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+void count(int d, int *r, int *v) {
+    *v = *r + *v;
+    *r = *v % d;
+    *v /= d;
+}
+
+int main(int argc, const char * argv[]) {
+    // 输入
+    int a = 0, b = 0, d = 0;
+    scanf("%d %d %d", &a, &b, &d);
+    
+    // 计算
+    int r[64] = {0};
+    for (int i = 63; i > 0; i--) {
+        count(d, r + i, &a);
+        count(d, r + i, &b);
+        if (a == 0 && b == 0) {
+            break;
+        }
+    }
+    
+    // 输出
+    for (int i = 0; i < 64; i++) {
+        if (d > 0) {
+            if (r[i] > 0) {
+                d = 0;
+            } else {
+                continue;
+            }
+        }
+        printf("%d", r[i]);
+    }
+    
+    return 0;
+}
+```

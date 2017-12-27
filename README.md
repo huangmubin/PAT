@@ -1260,4 +1260,82 @@ int main(int argc, const char * argv[]) {
 }
 ```
 
+# 1017 打印沙漏(20)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+本题要求你写个程序把给定的符号打印成沙漏的形状。例如给定17个“*”，要求按下列格式打印
+ 
+ *****
+  ***
+   *
+  ***
+ *****
+ 所谓“沙漏形状”，是指每行输出奇数个符号；各行符号中心对齐；相邻两行符号数差2；符号数先从大到小顺序递减到1，再从小到大顺序递
+ 增；首尾符号数相等。
+ 
+ 给定任意N个符号，不一定能正好组成一个沙漏。要求打印出的沙漏能用掉尽可能多的符号。
+
+> 输入描述:
+
+输入在一行给出1个正整数N（<=1000）和一个符号，中间以空格分隔。
+
+> 输出描述:
+
+首先打印出由给定符号组成的最大的沙漏形状，最后在一行中输出剩下没用掉的符号数。
+
+> 输入例子:
+
+19 *
+
+> 输出例子:
+
+*****
+ ***
+  *
+ ***
+*****
+2
+
+## C++
+
+```
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int count;
+    char sign;
+    scanf("%d %c", &count, &sign);
+    
+    int k = (int)sqrt((double)((count+1)/2));
+    int size = k * 2 - 1, line;
+    for (int i = k; i > 0; i--) {
+        line = i * 2 - 1;
+        for (int j = 0; j < (size - line) / 2; j++) {
+            printf(" ");
+        }
+        for (int j = 0; j < line; j++) {
+            printf("%c", sign);
+        }
+        printf("\n");
+    }
+    for (int i = 2; i <= k; i++) {
+        line = i * 2 - 1;
+        for (int j = 0; j < (size - line) / 2; j++) {
+            printf(" ");
+        }
+        for (int j = 0; j < line; j++) {
+            printf("%c", sign);
+        }
+        printf("\n");
+    }
+    printf("%d\n", count - 2 * k * k + 1);
+    return 0;
+}
+```
+
 

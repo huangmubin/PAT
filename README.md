@@ -1110,3 +1110,114 @@ int main(int argc, const char * argv[]) {
 }
 ```
 
+# 1015 反转链表 (25)
+
+> 时间限制 2000 ms 内存限制 150400 KB 代码长度限制 100 KB
+
+> 题目描述
+
+给定一个常数K以及一个单链表L，请编写程序将L中每K个结点反转。例如：给定L为1→2→3→4→5→6，K为3，则输出应该为3→2→1→6→5→4；如果K为4，则输出应该为4→3→2→1→5→6，即最后不到K个元素不反转。
+
+> 输入描述:
+
+每个输入包含1个测试用例。每个测试用例第1行给出第1个结点的地址、结点总个数正整数N(<= 105)、以及正整数K(<=N)，即要求反转的子链结点的个数。结点的地址是5位非负整数，NULL地址用-1表示。
+接下来有N行，每行格式为：
+Address Data Next
+其中Address是结点地址，Data是该结点保存的整数数据，Next是下一结点的地址。
+
+> 输出描述:
+
+对每个测试用例，顺序输出反转后的链表，其上每个结点占一行，格式与输入相同。
+
+> 输入例子:
+
+00100 6 4
+00000 4 99999
+00100 1 12309
+68237 6 -1
+33218 3 00000
+99999 5 68237
+12309 2 33218
+
+> 输出例子:
+
+00000 4 33218
+33218 3 12309
+12309 2 00100
+00100 1 99999
+99999 5 68237
+68237 6 -1
+
+## C++
+
+```
+/**
+ * 题目要点
+    * 给出来的数据中可能不止一个链表，而是多个。
+    * 不能把数据排序，否则会超时。
+ * 解题思路
+    * 先根据下标作为地址输入所有数据
+    * 从第一个节点开始访问整个链表，并按分割模块逆序存放下标在输出数组中
+    * 对输出数组按顺序输出，但是到最后一个模块时，逆序输出。
+ */
+#include <iostream>
+using namespace std;
+
+#define MAX 100000
+
+int main(int argc, const char * argv[]) {
+    // values
+    int node = 0, count = 0, space = 0, idx = 0;
+    int flg = 0;
+    int datas[MAX], nexts[MAX];
+    int sorts[MAX];
+    
+    // input
+    scanf("%d %d %d", &node, &count, &space);
+    while (count-- > 0) {
+        scanf("%d", &idx);
+        scanf("%d %d", &datas[idx], &nexts[idx]);
+    }
+    
+    // sort to sorts
+    // count: nodes block
+    // flg: a point move in nodes block
+    count = flg = 0;
+    while (flg != -2) {
+        flg = space - 1;
+        while (flg >= 0) {
+            sorts[flg + count] = node;
+            node = node != -1 ? nexts[node] : -2;
+            flg = sorts[flg + count] != -1 ? flg - 1 : -2;
+        }
+        count += space;
+    }
+    
+    // output total nodes block except last.
+    // if the node is smaller then spcae, then backward out.
+    if (count > space) {
+        printf("%05d %d ", sorts[0], datas[sorts[0]]);
+        for (idx = 1; idx < count - space; idx++) {
+            printf("%05d\n%05d %d ", sorts[idx], sorts[idx], datas[sorts[idx]]);
+        }
+    } else {
+        printf("%05d %d ", sorts[space-1], datas[sorts[space-1]]);
+        idx = -1;
+    }
+    
+    // output last nodes block
+    for (idx = idx + space - 1; idx >= count - space; idx--) {
+        if (sorts[idx] == -1) {
+            printf("-1\n");
+            break;
+        } else {
+            printf("%05d\n%05d %d ", sorts[idx], sorts[idx], datas[sorts[idx]]);
+        }
+    }
+    return 0;
+}
+```
+
+
+
+

@@ -1555,3 +1555,196 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 ```
+# 1021 1031. 查验身份证(15)
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB
+
+题目描述
+
+一个合法的身份证号码由17位地区、日期编号和顺序编号加1位校验码组成。校验码的计算规则如下：
+
+首先对前17位数字加权求和，权重分配为：{7，9，10，5，8，4，2，1，6，3，7，9，10，5，8，4，2}；然后将计算的和对11取模得到值Z；最后按照以下关系对应Z值与校验码M的值：
+
+Z：0 1 2 3 4 5 6 7 8 9 10
+M：1 0 X 9 8 7 6 5 4 3 2
+
+现在给定一些身份证号码，请你验证校验码的有效性，并输出有问题的号码。
+
+输入描述:
+
+输入第一行给出正整数N（<= 100）是输入的身份证号码的个数。随后N行，每行给出1个18位身份证号码。
+
+输出描述:
+
+按照输入的顺序每行输出1个有问题的身份证号码。这里并不检验前17位是否合理，只检查前17位是否全为数字且最后1位校验码计算准确。如果所有号码都正常，则输出“All passed”。
+
+输入例子:
+
+4
+320124198808240056
+12010X198901011234
+110108196711301866
+37070419881216001X
+
+输出例子:
+
+12010X198901011234
+110108196711301866
+37070419881216001X
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int weights[] = {7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2};
+    char m_chars[] = {'1','0','x','9','8','7','6','5','4','3','2'};
+    char users[100][20];
+    int count = 0, right_number = 0, sum = 0;
+    scanf("%d", &count);
+    for (int i = 0; i < count; i++) {
+        scanf("%s", users[i]);
+        sum = 0;
+        for (int k = 0; k < 17; k++) {
+            sum = sum + (users[i][k] - 48) * weights[k];
+        }
+        sum %= 11;
+        if (users[i][17] == m_chars[sum]) {
+            users[i][19] = 1;
+            right_number++;
+        } else {
+            users[i][19] = 0;
+        }
+    }
+    
+    if (right_number == count) {
+        printf("All passed");
+    } else {
+        for (int i = 0; i < count; i++) {
+            if (users[i][19] == 0) {
+                printf("%s\n", users[i]);
+            }
+        }
+    }
+    return 0;
+}
+```
+
+# 1022 挖掘机技术哪家强(20)
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB
+
+> 题目描述
+
+为了用事实说明挖掘机技术到底哪家强，PAT组织了一场挖掘机技能大赛。现请你根据比赛结果统计出技术最强的那个学校。
+
+> 输入描述:
+
+输入在第1行给出不超过105的正整数N，即参赛人数。随后N行，每行给出一位参赛者的信息和成绩，包括其所代表的学校的编号（从1开始连续编号）、及其比赛成绩（百分制），中间以空格分隔。
+
+> 输出描述:
+
+在一行中给出总得分最高的学校的编号、及其总分，中间以空格分隔。题目保证答案唯一，没有并列。
+
+> 输入例子:
+
+6
+3 65
+2 80
+1 100
+2 70
+3 40
+3 0
+
+> 输出例子:
+
+2 150
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int count = 0, max = 0, school = 0, score = 0, scores[100001] = {0};
+    scanf("%d", &count);
+    for (int i = 0; i < count; i++) {
+        scanf("%d %d", &school, &score);
+        scores[school] += score;
+        max = scores[max] > scores[school] ? max : school;
+    }
+    printf("%d %d\n", max, scores[max]);
+    return 0;
+}
+```
+
+# 1023 旧键盘打字(20)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 
+
+> 题目描述
+
+旧键盘上坏了几个键，于是在敲一段文字的时候，对应的字符就不会出现。现在给出应该输入的一段文字、以及坏掉的那些键，打出的结果文字会是怎样？
+
+> 输入描述:
+
+输入在2行中分别给出坏掉的那些键、以及应该输入的文字。其中对应英文字母的坏键以大写给出；每段文字是不超过10^5个字符的串。可用的字符包括字母[a-z, A-Z]、数字0-9、以及下划线“_”（代表空格）、“,”、“.”、“-”、“+”（代表上档键）。题目保证第2行输入的文字串非空。
+注意：如果上档键坏掉了，那么大写的英文字母无法被打出。
+
+> 输出描述:
+
+在一行中输出能够被打出的结果文字。如果没有一个字符能被打出，则输出空行。
+
+> 输入例子:
+
+7+IE.
+7_This_is_a_test.
+
+> 输出例子:
+
+_hs_s_a_tst
+
+## C++
+
+```
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    char bad_chars[124];
+    char input_chars[100001];
+    char *c = bad_chars, flag = 0;
+    do {
+        scanf("%c", c);
+        if (*c == '+') {
+            for (int i = 65; i < 91; i++) {
+                *c++ = i;
+            }
+            flag = -1;
+            c--;
+        } else if (*c > 64 && *c < 91) {
+            if (flag == -1) {
+                *c = *c + 32;
+            } else {
+                flag = *c++;
+                *c = flag + 32;
+            }
+        }
+    } while (*c++ != '\n');
+    *--c = '\0';
+    
+    c = input_chars;
+    do {
+        scanf("%c", c);
+        if (strchr(bad_chars, *c) == NULL) {
+            printf("%c", *c);
+        }
+    } while (*c++ != '\n');
+    
+    return 0;
+}
+```

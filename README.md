@@ -1338,4 +1338,220 @@ int main(int argc, const char * argv[]) {
 }
 ```
 
+# 1018 人口普查(20)
 
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+某城镇进行人口普查，得到了全体居民的生日。现请你写个程序，找出镇上最年长和最年轻的人。
+这里确保每个输入的日期都是合法的，但不一定是合理的——假设已知镇上没有超过200岁的老人，而今天是2014年9月6日，所以超过200岁的生日和未出生的生日都是不合理的，应该被过滤掉。
+
+> 输入描述:
+
+输入在第一行给出正整数N，取值在(0, 105]；随后N行，每行给出1个人的姓名（由不超过5个英文字母组成的字符串）、以及按“yyyy/mm/dd”（即年/月/日）格式给出的生日。题目保证最年长和最年轻的人没有并列。
+
+> 输出描述:
+
+在一行中顺序输出有效生日的个数、最年长人和最年轻人的姓名，其间以空格分隔。
+
+> 输入例子:
+
+5
+John 2001/05/12
+Tom 1814/09/06
+Ann 2121/01/30
+James 1814/09/05
+Steve 1967/11/20
+
+> 输出例子:
+
+3 Tom John
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+struct Date {
+    char name[6];
+    int year, month = 9, day = 6;
+};
+
+// is a older then b
+bool cmp(Date a, Date b) {
+    if (a.year == b.year) {
+        if (a.month == b.month) {
+            return a.day < b.day;
+        } else {
+            return a.month < b.month;
+        }
+    } else {
+        return a.year < b.year;
+    }
+}
+
+// cpy b to a
+void cpy(Date *a, Date *b) {
+    for (int i = 0; i < 6; i++) {
+        a->name[i] = b->name[i];
+    }
+    a->year = b->year;
+    a->month = b->month;
+    a->day = b->day;
+}
+
+int main(int argc, const char * argv[]) {
+    int number = 0, count = 0;
+    Date new_gay, oldest, youngest, tooold, tooyoung;
+    tooold.year = youngest.year = 1814;
+    tooyoung.year = oldest.year = 2014;
+    scanf("%d", &count);
+    for (int i = 0; i < count; i++) {
+        scanf("%s %d/%d/%d", new_gay.name, &new_gay.year, &new_gay.month, &new_gay.day);
+        if (cmp(new_gay, tooold) || cmp(tooyoung, new_gay)) {
+            continue;
+        }
+        number++;
+        if (cmp(new_gay, oldest)) {
+            cpy(&oldest, &new_gay);
+        }
+        if (cmp(youngest, new_gay)) {
+            cpy(&youngest, &new_gay);
+        }
+    }
+    
+    printf("%d %s %s\n", number, oldest.name, youngest.name);
+    return 0;
+}
+```
+
+# 1019 旧键盘 (20)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+旧键盘上坏了几个键，于是在敲一段文字的时候，对应的字符就不会出现。现在给出应该输入的一段文字、以及实际被输入的文字，请你列出肯定坏掉的那些键。
+
+> 输入描述:
+
+输入在2行中分别给出应该输入的文字、以及实际被输入的文字。每段文字是不超过80个字符的串，由字母A-Z（包括大、小写）、数字0-9、以及下划线“_”（代表空格）组成。题目保证2个字符串均非空。
+
+> 输出描述:
+
+按照发现顺序，在一行中输出坏掉的键。其中英文字母只输出大写，每个坏键只输出一次。题目保证至少有1个坏键。
+
+> 输入例子:
+
+7_This_is_a_test
+_hs_s_a_es
+
+> 输出例子:
+
+7TI
+
+```
+#include <iostream>
+#include <cstring>
+using namespace std;
+#define S 81
+
+char *upper(char *s) {
+    char *t = s;
+    while (*t != '\0') {
+        if (*t > 96 && *t < 123) {
+            *t = *t - 32;
+        }
+        t++;
+    }
+    return s;
+}
+
+int main(int argc, const char * argv[]) {
+    char want[S], input[S], bad[S];
+    scanf("%s\n%s", want, input);
+    char *w = upper(want), *i = upper(input), *b = bad;
+    while (*w != '\0') {
+        if (*w != *i) {
+            if (strchr(bad, *w) == NULL) {
+                *b++ = *w;
+            }
+            w++;
+        } else {
+            w++; i++;
+        }
+    }
+    printf("%s", bad);
+    return 0;
+}
+```
+
+# 1020 完美数列(25)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+给定一个正整数数列，和正整数p，设这个数列中的最大值是M，最小值是m，如果M <= m * p，则称这个数列是完美数列。现在给定参数p和一些正整数，请你从中选择尽可能多的数构成一个完美数列。
+
+> 输入描述:
+
+输入第一行给出两个正整数N和p，其中N（<= 105）是输入的正整数的个数，p（<= 109）是给定的参数。第二行给出N个正整数，每个数不超过109。
+
+> 输出描述:
+
+在一行中输出最多可以选择多少个数可以用它们组成一个完美数列。
+
+> 输入例子:
+
+10 8
+2 3 20 4 5 1 6 7 8 9
+
+> 输出例子:
+
+8
+
+```
+#include <iostream>
+#include <algorithm>
+#define MAX 10
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int count, p_number, datas[MAX];
+    scanf("%d %d", &count, &p_number);
+    for (int i = 0; i < count; i++) {
+        scanf("%d", &datas[i]);
+    }
+    sort(datas, datas + count);
+    int big = 0, size = 0;
+    int idx_small = 0, idx_big = 0, idx = 0;
+    for (int i = 0; i < count; i++) {
+        big = p_number * datas[i];
+        if (count - i > size) {
+            idx_small = i; idx_big = count;
+            idx = (idx_big + idx_small) / 2;
+            while (idx_small + 1 < idx_big) {
+                if (datas[idx] > big) {
+                    idx_big = idx;
+                    idx = (idx_big + idx_small) / 2;
+                } else {
+                    idx_small = idx;
+                    idx = (idx_big + idx_small) / 2;
+                }
+            }
+            size = max(idx - i + 1, size);
+//            for (int k = count - 1; k > i; k--) {
+//                if (datas[k] <= big) {
+//                    size = max(k - i + 1, size);
+//                    break;
+//                }
+//            }
+        }
+    }
+    printf("%d\n", size);
+    return 0;
+}
+```

@@ -1899,3 +1899,305 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 ```
+
+# 1025 插入与归并(25)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB
+
+> 题目描述
+
+根据维基百科的定义：
+插入排序是迭代算法，逐一获得输入数据，逐步产生有序的输出序列。每步迭代中，算法从输入序列中取出一元素，将之插入有序序列中正确的位置。如此迭代直到全部元素有序。
+归并排序进行如下迭代操作：首先将原始序列看成N个只包含1个元素的有序子序列，然后每次迭代归并两个相邻的有序子序列，直到最后只剩下1个有序的序列。
+现给定原始序列和由某排序算法产生的中间序列，请你判断该算法究竟是哪种排序算法？
+
+> 输入描述:
+
+输入在第一行给出正整数N (<=100)；随后一行给出原始序列的N个整数；最后一行给出由某排序算法产生的中间序列。这里假设排序的目标序列是升序。数字间以空格分隔。
+
+> 输出描述:
+
+首先在第1行中输出“Insertion Sort”表示插入排序、或“Merge Sort”表示归并排序；然后在第2行中输出用该排序算法再迭代一轮的结果序列。题目保证每组测试的结果是唯一的。数字间以空格分隔，且行末不得有多余空格。
+
+> 输入例子:
+
+10
+3 1 2 8 7 5 9 4 6 0
+1 2 3 7 8 5 9 4 6 0
+
+> 输出例子:
+
+Insertion Sort
+1 2 3 5 7 8 9 4 6 0
+
+> 输入例子:
+
+10
+3 1 2 8 7 5 9 4 0 6
+1 3 2 8 5 7 4 9 0 6
+
+> 输出例子:
+
+Merge Sort
+1 2 3 8 4 5 7 9 0 6
+
+10
+3 1 2 8 7 5 9 4 6 0
+1 2 3 5 7 8 9 4 6 0
+
+Insertion Sort
+1 2 3 4 5 7 8 9 6 0
+
+## C++ 1
+
+```
+#include <iostream>
+#define MAX 1000
+using namespace std;
+
+int merge_flag = 0, insert_flag = 0;
+int size = 0;
+int insert_array[MAX] = {0};
+int merge_array[MAX] = {0};
+int complete_array[MAX] = {0};
+
+// 对比数组
+bool compare(int *array1, int *array2, int size) {
+    for (int i = 0; i < size; i++) {
+        if (array1[i] != array2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// 打印数组
+void print_array(int *array, int size) {
+    for (int i = 0; i < size - 1; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("%d\n", array[size - 1]);
+}
+
+// 归并排序 - 排序
+void sort_merge_sort(int *array, int *temp_array, int idx_start, int idx_mid, int idx_end) {
+    int s = idx_start, m = idx_mid, t = idx_start;
+    while (s < idx_mid && m < idx_end) {
+        if (array[s] < array[m]) {
+            temp_array[t++] = array[s++];
+        } else {
+            temp_array[t++] = array[m++];
+        }
+    }
+    while (s < idx_mid) {
+        temp_array[t++] = array[s++];
+    }
+    while (m < idx_end) {
+        temp_array[t++] = array[m++];
+    }
+    t = idx_start;
+    while (t < idx_end) {
+        array[t] = temp_array[t];
+        t++;
+    }
+}
+
+// 归并排序 - 归并
+void sort_merge(int *array, int *temp_array, int idx_start, int idx_end) {
+    int idx_mid = (idx_end + idx_start) / 2;
+    if (idx_start < idx_end - 1 && merge_flag != 2) {
+        sort_merge(array, temp_array, idx_start, idx_mid);
+        sort_merge(array, temp_array, idx_mid, idx_end);
+        sort_merge_sort(array, temp_array, idx_start, idx_mid, idx_end);
+        if (merge_flag == 0) {
+            if (compare(array, complete_array, size)) {
+                merge_flag = 1;
+            }
+        } else if (merge_flag == 1) {
+            printf("Merge Sort\n");
+            print_array(array, size);
+            merge_flag = 2;
+        }
+    }
+}
+void sort_merge2(int *array, int *temp_array, int size) {
+    int left_point = 0, right_point = 0, left_limit = 0, right_limit = 0, next = 0;
+    for (int i = 1; i < size; i *= 2) { // 分块步长
+        for (left_point = 0; left_point < size - i; left_point = right_limit) { // 分块
+            next = left_point;
+            left_limit = right_point = left_point + i;
+            right_limit = right_point + i;
+            while (left_point < left_limit && right_point < right_limit) {
+                if (array[left_point] < array[right_point]) {
+                    temp_array[next++] = array[left_point++];
+                } else  {
+                    temp_array[next++] = array[right_point++];
+                }
+            }
+            while (left_point < left_limit) {
+                temp_array[next++] = array[left_point++];
+            }
+            while (right_point < right_limit) {
+                temp_array[next++] = array[right_point++];
+            }
+        }
+        for (next = 0; next < size; next++) {
+            array[next] = temp_array[next];
+        }
+        if (insert_flag == 0) {
+            if (compare(array, complete_array, size)) {
+                insert_flag = 1;
+            }
+        } else if (insert_flag == 1) {
+            printf("Merge Sort\n");
+            print_array(array, size);
+            merge_flag = 2;
+            break;
+        }
+    }
+}
+
+void sort_insert(int *array, int size) {
+    int temp;
+    for (int i = 0; i < size && insert_flag != 3; i++) {
+        for (int j = i - 1; j >= 0 && insert_flag != 3; j--) {
+            if (array[j] > array[j+1]) {
+                temp = array[j];
+                array[j] = array[j+1];
+                array[j+1] = temp;
+                if (insert_flag == 1) {
+                    insert_flag = 2;
+                }
+            }
+        }
+        if (insert_flag == 0) {
+            if (compare(array, complete_array, size)) {
+                insert_flag = 1;
+            }
+        } else if (insert_flag == 2) {
+            printf("Insertion Sort\n");
+            print_array(array, size);
+            insert_flag = 3;
+        }
+    }
+}
+
+int main(int argc, const char * argv[]) {
+    scanf("%d", &size);
+    int value;
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &value);
+        insert_array[i] = merge_array[i] = value;
+    }
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &complete_array[i]);
+    }
+    sort_insert(insert_array, size);
+    if (insert_flag == 0) {
+        int temp_array[MAX];
+        sort_merge2(merge_array, temp_array, size);
+        //sort_merge(merge_array, temp_array, 0, size);
+    }
+    return 0;
+}
+```
+
+## C++ 2
+
+```
+#include <iostream>
+using namespace std;
+
+// 对比数组
+bool compare(int *array1, int *array2, int size) {
+    for (int i = 0; i < size; i++) {
+        if (array1[i] != array2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// 打印数组
+void print_array(int *array, int size) {
+    for (int i = 0; i < size - 1; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("%d\n", array[size - 1]);
+}
+
+int main(int argc, const char * argv[]) {
+    int lenght, array_compare[100], array_insert[100], array_merge[100], array_merge_temp[100];
+    int flag = 0;
+    
+    // input
+    scanf("%d", &lenght);
+    for (int i = 0; i < lenght; i++) {
+        scanf("%d", &array_insert[i]);
+        array_merge[i] = array_insert[i];
+    }
+    for (int i = 0; i < lenght; i++) {
+        scanf("%d", &array_compare[i]);
+    }
+    
+    // insert sort
+    int temp = 0;
+    for (int i = 1; i < lenght; i++) {
+        for (int j = i - 1; j >= 0; j--) {
+            if (array_insert[j] > array_insert[j+1]) {
+                temp = array_insert[j];
+                array_insert[j] = array_insert[j+1];
+                array_insert[j+1] = temp;
+                if (flag == 1) {
+                    flag = 2;
+                }
+            }
+        }
+        if (flag == 0) {
+            if (compare(array_compare, array_insert, lenght)) {
+                flag = 1;
+            }
+        } else if (flag == 2) {
+            printf("Insertion Sort\n");
+            print_array(array_insert, lenght);
+            return 0;
+        }
+    }
+    
+    // merge sort
+    int left = 0, right = 0, limit_left = 0, limit_right = 0;
+    for (int i = 1; i < lenght; i *= 2) {
+        for (left = 0; left < lenght - i; left = limit_right) {
+            temp = left;
+            right = limit_left = left + i;
+            limit_right = right + i;
+            while (left < limit_left && right < limit_right) {
+                if (array_merge[left] < array_merge[right]) {
+                    array_merge_temp[temp++] = array_merge[left++];
+                } else {
+                    array_merge_temp[temp++] = array_merge[right++];
+                }
+            }
+            while (left < limit_left) {
+                array_merge_temp[temp++] = array_merge[left++];
+            }
+            while (right < limit_right) {
+                array_merge_temp[temp++] = array_merge[right++];
+            }
+        }
+        for (temp = 0; temp < lenght; temp++) {
+            array_merge[temp] = array_merge_temp[temp];
+        }
+        if (flag == 0) {
+            if (compare(array_compare, array_merge, lenght)) {
+                flag = 1;
+            }
+        } else if (flag == 1) {
+            printf("Merge Sort\n");
+            print_array(array_merge, lenght);
+            return 0;
+        }
+    }
+    return 0;
+}
+```

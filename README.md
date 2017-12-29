@@ -1748,3 +1748,154 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 ```
+
+# 1024 有理数四则运算(20)
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+题目描述
+
+本题要求编写程序，计算2个有理数的和、差、积、商。
+
+输入描述:
+
+输入在一行中按照“a1/b1 a2/b2”的格式给出两个分数形式的有理数，其中分子和分母全是整型范围内的整数，负号只可能出现在分子前，分母不为0。
+
+输出描述:
+
+分别在4行中按照“有理数1 运算符 有理数2 = 结果”的格式顺序输出2个有理数的和、差、积、商。注意输出的每个有理数必须是该有理数的最简形式“k a/b”，其中k是整数部分，a/b是最简分数部分；若为负数，则须加括号；若除法分母为0，则输出“Inf”。题目保证正确的输出中没有超过整型范围的整数。
+
+输入例子:
+
+5/3 0/6
+
+输出例子:
+
+1 2/3 + 0 = 1 2/3
+1 2/3 - 0 = 1 2/3
+1 2/3 * 0 = 0
+1 2/3 / 0 = Inf
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+// 求公约数
+int common_divisor(int a, int b) {
+    int r = 0;
+    do {
+        r = a % b;
+        a = b;
+        b = r;
+    } while (r != 0);
+    return a;
+}
+
+struct Number {
+    bool c = true; // 正负号
+    int i = 0; // 整数
+    int m = 0; // 分子
+    int d = 0; // 分母
+    
+    // 输出完整的分子
+    int count_m() {
+        return (c ? 1 : -1) * (i * d + m);
+    }
+    
+    // 简化分子分母
+    void simplify() {
+        c = m * d >= 0;
+        m = abs(m);
+        d = abs(d);
+        i = m / d;
+        m = m % d;
+        if (m != 0) {
+            int c = common_divisor(m, d);
+            m = m / c;
+            d = d / c;
+        }
+    }
+    
+    // 打印信息
+    void print() {
+        if (i == 0) {
+            if (m == 0) {
+                printf("0");
+            } else {
+                if (c) {
+                    printf("%d/%d", m, d);
+                } else {
+                    printf("(-%d/%d)", m, d);
+                }
+            }
+        } else {
+            if (m == 0) {
+                if (c) {
+                    printf("%d", i);
+                } else {
+                    printf("(-%d)", i);
+                }
+            } else {
+                if (c) {
+                    printf("%d %d/%d", i, m, d);
+                } else {
+                    printf("(-%d %d/%d)", i, m, d);
+                }
+            }
+        }
+    }
+};
+
+void plus_number(Number a, Number b) {
+    Number c;
+    c.d = a.d * b.d;
+    c.m = a.count_m() * b.d + b.count_m() * a.d;
+    c.simplify();
+    a.print(); printf(" + "); b.print(); printf(" = "); c.print(); printf("\n");
+}
+
+void reduce_number(Number a, Number b) {
+    Number c;
+    c.d = a.d * b.d;
+    c.m = a.count_m() * b.d - b.count_m() * a.d;
+    c.simplify();
+    a.print(); printf(" - "); b.print(); printf(" = "); c.print(); printf("\n");
+}
+
+void multiply_number(Number a, Number b) {
+    Number c;
+    c.d = a.d * b.d;
+    c.m = a.count_m() * b.count_m();
+    c.simplify();
+    a.print(); printf(" * "); b.print(); printf(" = "); c.print(); printf("\n");
+}
+
+void divide_number(Number a, Number b) {
+    if (b.count_m() == 0) {
+        a.print(); printf(" / "); b.print(); printf(" = Inf\n");
+    } else {
+        Number c;
+        c.d = a.d * b.count_m();
+        c.m = a.count_m() * b.d;
+        c.simplify();
+        a.print(); printf(" / "); b.print(); printf(" = "); c.print(); printf("\n");
+    }
+}
+
+int main(int argc, const char * argv[]) {
+    
+    Number a, b, out;
+    //a.m = 5; a.d = 3; b.m = 0; b.d = 6;
+    scanf("%d/%d %d/%d", &a.m, &a.d, &b.m, &b.d);
+    a.simplify();
+    b.simplify();
+    
+    plus_number(a, b);
+    reduce_number(a, b);
+    multiply_number(a, b);
+    divide_number(a, b);
+    return 0;
+}
+```

@@ -2201,3 +2201,273 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 ```
+# 1026 跟奥巴马一起编程(15)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB
+
+> 题目描述
+
+美国总统奥巴马不仅呼吁所有人都学习编程，甚至以身作则编写代码，成为美国历史上首位编写计算机代码的总统。2014年底，为庆祝“计算机科学教育周”正式启动，奥巴马编写了很简单的计算机代码：在屏幕上画一个正方形。现在你也跟他一起画吧！
+
+> 输入描述:
+
+输入在一行中给出正方形边长N（3<=N<=20）和组成正方形边的某种字符C，间隔一个空格。
+
+> 输出描述:
+
+输出由给定字符C画出的正方形。但是注意到行间距比列间距大，所以为了让结果看上去更像正方形，我们输出的行数实际上是列数的50%（四舍五入取整）。
+
+> 输入例子:
+
+10 a
+
+> 输出例子:
+
+aaaaaaaaaa
+a a
+a a
+a a
+aaaaaaaaaa
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int count;
+    char sign;
+    scanf("%d %c", &count, &sign);
+    
+    for (int c = 0; c < count; c++) {
+        printf("%c", sign);
+    }
+    printf("\n");
+    int rows =  count / 2 - (count % 2 == 1 ? 0 : 1);
+    for (int r = 1; r < rows; r++) {
+        printf("%c", sign);
+        for (int c = 1; c < count - 1; c++) {
+            printf(" ");
+        }
+        printf("%c\n", sign);
+    }
+    for (int c = 0; c < count; c++) {
+        printf("%c", sign);
+    }
+    printf("\n");
+}
+```
+
+# 1027 在霍格沃茨找零钱（20）
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB
+
+> 题目描述
+
+如果你是哈利·波特迷，你会知道魔法世界有它自己的货币系统 —— 就如海格告诉哈利的：“十七个银西可(Sickle)兑一个加隆(Galleon)，二十九个纳特(Knut)兑一个西可，很容易。”现在，给定哈利应付的价钱P和他实付的钱A，你的任务是写一个程序来计算他应该被找的零钱。
+
+> 输入描述:
+
+输入在1行中分别给出P和A，格式为“Galleon.Sickle.Knut”，其间用1个空格分隔。这里Galleon是[0, 107]]区间内的整数，Sickle是[0, 17)区间内的整数，Knut是[0, 29)区间内的整数。
+
+> 输出描述:
+
+在一行中用与输入同样的格式输出哈利应该被找的零钱。如果他没带够钱，那么输出的应该是负数。
+
+> 输入例子:
+
+10.16.27 14.1.28
+
+> 输出例子:
+
+3.2.1
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+struct Money {
+    int galleon = 0;
+    int sickle = 0;
+    int kunt = 0;
+    
+    void count() {
+        sickle = kunt / 29;
+        kunt = abs(kunt % 29);
+        galleon = sickle / 17;
+        sickle = abs(sickle % 17);
+    }
+};
+
+int main(int argc, const char * argv[]) {
+    Money p, a;
+    scanf("%d.%d.%d %d.%d.%d", &p.galleon, &p.sickle, &p.kunt, &a.galleon, &a.sickle, &a.kunt);
+    a.galleon = a.galleon - p.galleon;
+    a.sickle = a.galleon * 17 + a.sickle - p.sickle;
+    a.kunt = a.sickle * 29 + a.kunt - p.kunt;
+    a.count();
+    printf("%d.%d.%d\n", a.galleon, a.sickle, a.kunt);
+}
+```
+
+# 1028 统计同成绩学生(20)
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB
+
+> 题目描述
+
+本题要求读入N名学生的成绩，将获得某一给定分数的学生人数输出。
+
+> 输入描述:
+
+输入在第1行给出不超过105的正整数N，即学生总人数。随后1行给出N名学生的百分制整数成绩，中间以空格分隔。最后1行给出要查询的分数个数K（不超过N的正整数），随后是K个分数，中间以空格分隔。
+
+> 输出描述:
+
+在一行中按查询顺序给出得分等于指定分数的学生人数，中间以空格分隔，但行末不得有多余空格。
+
+> 输入例子:
+
+10
+60 75 90 55 75 99 82 90 75 50
+3 75 90 88
+
+> 输出例子:
+
+3 2 0
+
+## C++
+
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int score_lenght, scores[100000], count_lenght, counts[100000];
+    int out[100000];
+    scanf("%d", &score_lenght);
+    for (int i = 0; i < score_lenght; i++) {
+        scanf("%d", &scores[i]);
+    }
+    scanf("%d", &count_lenght);
+    for (int i = 0; i < count_lenght; i++) {
+        scanf("%d", &counts[i]);
+    }
+    
+    for (int j = 0; j < count_lenght; j++) {
+        for (int i = 0; i < score_lenght; i++) {
+            if (counts[j] == scores[i]) {
+                out[j]++;
+            }
+        }
+    }
+    
+    for (int i = 0; i < count_lenght-1; i++) {
+        printf("%d ", out[i]);
+    }
+    printf("%d\n", out[count_lenght-1]);
+}
+```
+
+# 1029 到底买不买（20）
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+小红想买些珠子做一串自己喜欢的珠串。卖珠子的摊主有很多串五颜六色的珠串，但是不肯把任何一串拆散了卖。于是小红要你帮忙判断一下，某串珠子里是否包含了全部自己想要的珠子？如果是，那么告诉她有多少多余的珠子；如果不是，那么告诉她缺了多少珠子。
+为方便起见，我们用[0-9]、[a-z]、[A-Z]范围内的字符来表示颜色。例如，YrR8RrY是小红想做的珠串；那么ppRYYGrrYBR2258可以买，因为包含了全部她想要的珠子，还多了8颗不需要的珠子；ppRYYGrrYB225不能买，因为没有黑色珠子，并且少了一颗红色的珠子。
+
+> 输入描述:
+
+每个输入包含1个测试用例。每个测试用例分别在2行中先后给出摊主的珠串和小红想做的珠串，两串都不超过1000个珠子。
+
+> 输出描述:
+
+如果可以买，则在一行中输出“Yes”以及有多少多余的珠子；如果不可以买，则在一行中输出“No”以及缺了多少珠子。其间以1个空格分隔。
+
+> 输入例子:
+
+ppRYYGrrYBR2258
+YrR8RrY
+
+> 输出例子:
+
+Yes 8
+
+## C++
+
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    char sell_array[1001], buy_array[1001];
+    scanf("%s", sell_array);
+    scanf("%s", buy_array);
+    
+    char *sell_end = sell_array;
+    char *buy_end = buy_array;
+    while (*sell_end != '\0') { sell_end++; }
+    while (*buy_end != '\0') { buy_end++; }
+    
+    char *sell = sell_array;
+    char *buy = buy_array;
+    
+    while (*sell != '\0') {
+        buy = buy_array;
+        while (*buy != '\0') {
+            if (*buy == *sell) {
+                *buy = *--buy_end;
+                *buy_end = '\0';
+                *sell = *--sell_end;
+                *sell_end = '\0';
+                sell--;
+                break;
+            }
+            buy++;
+        }
+        sell++;
+    }
+    
+    int count = 0;
+    if (buy_array[0] == '\0') {
+        while (sell_end-- != sell_array) { count++; }
+        printf("Yes %d\n", count);
+    } else {
+        while (buy_end-- != buy_array) { count++; }
+        printf("No %d\n", count);
+    }
+}
+```
+
+# 1030 有几个PAT（25）
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+字符串APPAPT中包含了两个单词“PAT”，其中第一个PAT是第2位(P),第4位(A),第6位(T)；第二个PAT是第3位(P),第4位(A),第6位(T)。现给定字符串，问一共可以形成多少个PAT？
+
+> 输入描述:
+
+输入只有一行，包含一个字符串，长度不超过105，只包含P、A、T三种字母。
+
+> 输出描述:
+
+在一行中输出给定字符串中包含多少个PAT。由于结果可能比较大，只输出对1000000007取余数的结果。
+
+> 输入例子:
+
+APPAPT
+
+> 输出例子:
+
+2
+
+## C++
+

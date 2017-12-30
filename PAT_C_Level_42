@@ -1,1 +1,360 @@
+# 1001 采花生
 
+> 时间限制 1000 ms 内存限制 16384 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 目描述
+
+鲁宾逊先生有一只宠物猴，名叫多多。这天，他们两个正沿着乡间小路散步，突然发现路边的告示牌上贴着一张小小的纸条：“欢迎免费品尝我种的花生！——熊字”。
+鲁宾逊先生和多多都很开心，因为花生正是他们的最爱。在告示牌背后，路边真的有一块花生田，花生植株整齐地排列成矩形网格。有经验的多多一眼就能看出，每棵花生植株下的花生有多少。为了训练多多的算术，鲁宾逊先生说:“你先找出花生最多的植株，去采摘它的花生;然后再找出剩下的植株里花生最多的，去采摘它的花生;依此类推，不过你一定要在我限定的时间内回到路边。”
+
+我们假定多多在每个单位时间内,可以做下列四件事情中的一件：
+
+1. 从路边跳到最靠近路边（即第一行）的某棵花生植株；
+2. 从一棵植株跳到前后左右与之相邻的另一棵植株；
+3. 采摘一棵植株下的花生；
+4. 从最靠近路边（即第一行）的某棵花生植株跳回路边。
+
+现在给定一块花生田的大小和花生的分布，请问在限定时间内，多多最多可以采到多少个花生？
+
+注意可能只有部分植株下面长有花生，假设这些植株下的花生个数各不相同。例如花生田里只有位于(2, 5), (3, 7), (4, 2), (5, 4)的植株下长有花生，个数分别为 13, 7, 15, 9。多多在 21 个单位时间内，只能经过(4, 2)、(2, 5)、(5, 4)，最多可以采到 37 个花生。
+
+> 输入描述:
+
+输入包含多组数据，每组数据第一行包括三个整数 M（1≤M≤20）、N（1≤N≤20）和 K（0≤K≤1000），用空格隔开；表示花生田的大小为 M * N，多多采花生的限定时间为 K个单位时间。
+
+紧接着 M 行，每行包括 N 个自然数 P（0≤P≤500），用空格隔开；表示花生田里植株下花生的数目，并且除了0（没有花生），其他所有植株下花生的数目都不相同。
+
+
+> 输出描述:
+
+对应每一组数据，输出一个整数，即在限定时间内，多多最多可以采到花生的个数。
+
+> 输入例子:
+
+6 7 21
+0 0 0 0 0 0 0
+0 0 0 0 13 0 0
+0 0 0 0 0 0 7
+0 15 0 0 0 0 0
+0 0 0 9 0 0 0
+0 0 0 0 0 0 0
+6 7 15
+0 0 0 0 0 0 0
+0 0 0 0 13 0 0
+0 0 0 0 0 0 7
+0 20 0 0 0 0 0
+0 0 0 9 0 0 0
+0 0 0 0 0 0 0
+1 1 0
+0
+1 1 3
+123
+0 0 0
+1
+EOF
+
+> 输出例子:
+
+37
+
+## C++
+
+```
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+struct PeanutTree {
+    int row = 0, col = 0;
+    int value = 0;
+    int in_path = 0, out_path = 0;
+};
+
+bool cmp(PeanutTree a, PeanutTree b) {
+    return a.value > b.value;
+}
+
+int main(int argc, const char * argv[]) {
+    int m = 0, n = 0, k = 0, value = 0;
+    int tree_count = 0, peanuts = 0;
+    PeanutTree trees[10];
+    while (cin >> m >> n >> k) {
+        // input datas
+        tree_count = peanuts = 0;
+        for (int row = 0; row < m; row++) {
+            for (int col = 0; col < n; col++) {
+                cin >> value;
+                if (value != 0) {
+                    trees[tree_count].row = row;
+                    trees[tree_count].col = col;
+                    trees[tree_count].value = value;
+                    trees[tree_count].out_path = row + 1;
+                    tree_count++;
+                }
+            }
+        }
+        
+        if (tree_count > 0) {
+            // sort
+            sort(trees, trees + tree_count, cmp);
+            
+            // count
+            trees[0].in_path = trees[0].row + 1;
+            if (k > trees[0].in_path + trees[0].out_path) {
+                peanuts += trees[0].value;
+                k = k - trees[0].in_path - 1;
+                for (int i = 1; i < tree_count; i++) {
+                    trees[i].in_path = abs(trees[i-1].row - trees[i].row) + abs(trees[i-1].col - trees[i].col);
+                    if (k > trees[i].in_path + trees[i].out_path) {
+                        peanuts += trees[i].value;
+                        k = k - trees[i].in_path - 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // output
+        cout << peanuts << endl;
+    }
+    return 0;
+}
+```
+
+# 1002 NowCoder数列
+
+> 时间限制 3000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+NowCoder最近在研究一个数列：
+
+* F(0) = 7
+* F(1) = 11
+* F(n) = F(n-1) + F(n-2) (n≥2)
+
+他称之为NowCoder数列。请你帮忙确认一下数列中第n个数是否是3的倍数。
+
+> 输入描述:
+
+输入包含多组数据。
+每组数据包含一个整数n，(0≤n≤1000000)。
+
+> 输出描述:
+
+对应每一组输入有一行输出。
+如果F(n)是3的倍数，则输出“Yes”；否则输出“No”。
+
+> 输入例子:
+
+0
+1
+2
+3
+4
+5
+
+> 输出例子:
+
+No
+No
+Yes
+No
+No
+No
+
+## C++
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int value = 0;
+    while (cin >> value) {
+        if (value % 4 == 2) {
+            cout << "Yes" << endl;
+        } else {
+            cout << "No" << endl;
+        }
+    }
+    return 0;
+}
+```
+
+# 1003 养兔子
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+一只成熟的兔子每天能产下一胎兔子。每只小兔子的成熟期是一天。 某人领养了一只小兔子，请问第N天以后，他将会得到多少只兔子。
+
+> 输入描述:
+
+测试数据包括多组，每组一行，为整数n(1≤n≤90)。
+
+> 输出描述:
+
+对应输出第n天有几只兔子(假设没有兔子死亡现象)。
+
+> 输入例子:
+
+1
+2
+
+> 输出例子:
+
+1
+2
+
+## C++
+
+```
+#include <iostream>
+
+using namespace std;
+
+long rabbits_count(long *rabbits, int n) {
+    if (rabbits[n] > 0) {
+        return rabbits[n];
+    } else {
+        rabbits[n] = rabbits_count(rabbits, n - 1) + rabbits_count(rabbits, n - 2);
+        return rabbits[n];
+    }
+}
+
+int main(int argc, const char * argv[]) {
+    int value = 0;
+    long rabbits[91] = {0,1,2};
+    
+    while (cin >> value) {
+        cout << rabbits_count(rabbits, value) << endl;
+    }
+    return 0;
+}
+```
+
+# 1004 客似云来
+
+> 时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+NowCoder开了一家早餐店，这家店的客人都有个奇怪的癖好：他们只要来这家店吃过一次早餐，就会每天都过来；并且，所有人在这家店吃了两天早餐后，接下来每天都会带一位新朋友一起来品尝。
+
+于是，这家店的客人从最初一个人发展成浩浩荡荡成百上千人：1、1、2、3、5……
+
+现在，NowCoder想请你帮忙统计一下，某一段时间范围那他总共卖出多少份早餐（假设每位客人只吃一份早餐）。
+
+> 输入描述:
+
+测试数据包括多组。
+
+每组数据包含两个整数from和to(1≤from≤to≤80)，分别代表开店的第from天和第to天。
+
+> 输出描述:
+
+对应每一组输入，输出从from到to这些天里（包含from和to两天），需要做多少份早餐。
+
+> 输入例子:
+
+1 10
+2 8
+36 80
+
+## C++
+
+```
+#include <iostream>
+
+using namespace std;
+
+long people_count(long *peoples, int n) {
+    if (peoples[n] > 0) {
+        return peoples[n];
+    } else {
+        peoples[n] = people_count(peoples, n - 1) + people_count(peoples, n - 2);
+        return peoples[n];
+    }
+}
+
+int main(int argc, const char * argv[]) {
+    int from = 0, to = 0;
+    long peoples[81] = {1,1,2,3,5};
+    long sum = 0;
+    
+    while (cin >> from >> to) {
+        sum = 0;
+        for (int i = from - 1; i < to; i++) {
+            sum = sum + people_count(peoples, i);
+        }
+        cout << sum << endl;
+    }
+    return 0;
+}
+```
+
+# 1005 斐波那契凤尾
+
+> 时间限制 3000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+
+> 题目描述
+
+NowCoder号称自己已经记住了1-100000之间所有的斐波那契数。
+
+为了考验他，我们随便出一个数n，让他说出第n个斐波那契数。当然，斐波那契数会很大。因此，如果第n个斐波那契数不到6位，则说出该数；否则只说出最后6位。
+
+> 输入描述:
+
+输入有多组数据。
+
+每组数据一行，包含一个整数n (1≤n≤100000)。
+
+> 输出描述:
+
+对应每一组输入，输出第n个斐波那契数的最后6位。
+
+> 输入例子:
+
+1
+2
+3
+4
+100000
+
+> 输出例子:
+
+1
+2
+3
+5
+537501
+
+## C++
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int Fibonacci_suffix[100001] = {1,1,2,3,5};
+    for (int i = 5; i < 100001; i++) {
+        Fibonacci_suffix[i] = (Fibonacci_suffix[i-1] + Fibonacci_suffix[i-2]) % 1000000;
+    }
+    
+    int n = 0;
+    while (cin >> n) {
+        if (n < 29) {
+            printf("%d\n", Fibonacci_suffix[n]);
+        } else {
+            printf("%06d\n", Fibonacci_suffix[n]);
+        }
+    }
+    return 0;
+}
+```

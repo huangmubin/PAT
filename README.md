@@ -2471,3 +2471,42 @@ APPAPT
 
 ## C++
 
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    char inputs[100001];
+    scanf("%s", inputs);
+    
+    long long p_numbers[100001], p = 0, t_numbers[100001], t = 0;
+    int lenght = 100001;
+    for (int i = 0; i < lenght; i++) {
+        if (inputs[i] == '\0') {
+            lenght = i;
+            break;
+        }
+        if (inputs[i] == 'P') {
+            p++;
+        }
+        p_numbers[i] = p;
+    }
+    for (int k = lenght; k >= 0; k--) {
+        if (inputs[k] == 'T') {
+            t++;
+        }
+        t_numbers[k] = t;
+    }
+    
+    long long count = 0;
+    for (int i = 1; i < lenght - 1; i++) {
+        if (inputs[i] == 'A') {
+            count = count + p_numbers[i] * t_numbers[i];
+            count %= 1000000007;
+        }
+    }
+    
+    printf("%lld", count);
+    return 0;
+}
+```

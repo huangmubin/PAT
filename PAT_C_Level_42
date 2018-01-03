@@ -742,3 +742,311 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 ```
+
+# 1013 分解因数
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+题目描述
+所谓因子分解，就是把给定的正整数a，分解成若干个素数的乘积，即 a = a1 × a2 × a3 × ... × an,并且 1 < a1 ≤ a2 ≤ a3 ≤ ... ≤ an。其中a1、a2、...、an均为素数。
+
+先给出一个整数a，请输出分解后的因子。
+
+输入描述:
+输入包含多组数据，每组数据包含一个正整数a（2≤a≤1000000）。
+
+
+输出描述:
+对应每组数据，以“a = a1 * a2 * a3...”的形式输出因式分解后的结果。
+
+输入例子:
+10
+18
+
+输出例子:
+10 = 2 * 5
+18 = 2 * 3 * 3
+
+```
+#include <iostream>
+
+using namespace std;
+
+// 求素数
+bool is_prime(int v) {
+    if (v < 2) {
+        return false;
+    } else {
+        int i = 2;
+        while (i * i <= v) {
+            if (v % i++ == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+int prime_value(int primes[], int idx, int *flag) {
+    while (*flag < idx) {
+        int value = primes[*flag];
+        while (!is_prime(++value));
+        *flag += 1;
+        primes[*flag] = value;
+    }
+    return primes[idx];
+}
+
+int main(int argc, const char * argv[]) {
+    int value = 0;
+    int primes[100000] = {2,3,5,7,11,13,17,19,23,29}, prime, flag = 9, idx = 0;
+    while (cin >> value) {
+        prime = 2; idx = 0;
+        if (is_prime(value)) {
+            printf("%d = %d", value, value);
+            value /= value;
+        } else {
+            while (value % prime != 0) {
+                prime = prime_value(primes, ++idx, &flag);
+            }
+            printf("%d = %d", value, prime);
+            value /= prime;
+        }
+        while (value > 1) {
+            while (value % prime == 0) {
+                printf(" * %d", prime);
+                value /= prime;
+            }
+            prime = prime_value(primes, ++idx, &flag);
+        }
+        printf("\n");
+    }
+    return 0;
+}
+```
+
+# 1014 因子个数
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+题目描述
+一个正整数可以分解成一个或多个数组的积。例如36=2*2*3*3，即包含2和3两个因子。NowCoder最近在研究因子个数的分布规律，现在给出一系列正整数，他希望你开发一个程序输出每个正整数的因子个数。
+
+输入描述:
+输入包括多组数据。
+每组数据仅有一个整数n (2≤n≤100000)。
+
+
+输出描述:
+对应每个整数，输出其因子个数，每个结果占一行。
+
+输入例子:
+30
+26
+20
+
+输出例子:
+3
+2
+2
+
+```
+#include <iostream>
+
+using namespace std;
+
+// 求素数
+bool is_prime(int v) {
+    if (v < 2) {
+        return false;
+    } else {
+        int i = 2;
+        while (i * i <= v) {
+            if (v % i++ == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+int prime_value(int primes[], int idx, int *flag) {
+    while (*flag < idx) {
+        int value = primes[*flag];
+        while (!is_prime(++value));
+        *flag += 1;
+        primes[*flag] = value;
+    }
+    return primes[idx];
+}
+
+int main(int argc, const char * argv[]) {
+    int value = 0;
+    int primes[100000] = {2,3,5,7,11,13,17,19,23,29};
+    int prime, flag = 9, idx = 0;
+    int count;
+    while (cin >> value) {
+        prime = 2; idx = 0; count = 0;
+        while (value > 1) {
+            if (value % prime == 0) {
+                count++;
+                while (value % prime == 0) {
+                    value /= prime;
+                }
+            }
+            prime = prime_value(primes, ++idx, &flag);
+        }
+        printf("%d\n", count);
+    }
+    return 0;
+}
+```
+
+# 1015 skew数
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+题目描述
+在 skew binary 表示中，第 k 位的值 x[k] 表示 x[k]×(2^(k+1)-1)。每个位上的可能数字是 0 或 1，最后面一个非零位可以是 2，例如，10120(skew) = 1×(2^5-1) + 0×(2^4-1) + 1×(2^3-1) + 2×(2^2-1) + 0×(2^1-1) = 31 + 0 + 7 + 6 + 0 = 44。前十个 skew 数是 0、1、2、10、11、12、20、100、101、以及 102。
+
+输入描述:
+输入包括多组数据，每组数据包含一个 skew 数。
+
+
+输出描述:
+对应每一组数据，输出相应的十进制形式。结果不超过 2^31-1。
+
+输入例子:
+10120
+200000000000000000000000000000
+10
+1000000000000000000000000000000
+11
+100
+11111000001110000101101102000
+
+输出例子:
+44
+2147483646
+3
+2147483647
+4
+7
+1041110737
+
+```
+#include <iostream>
+#include <cstring>
+#include <math.h>
+
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    char skew[33];
+    unsigned long lenght, count;
+    int idx;
+    while (cin >> skew) {
+        idx = count = 0;
+        lenght = strlen(skew);
+        for (int i = 0; i < lenght; i++) {
+            count = count + (skew[i] - 48) * (pow(2, lenght - i) - 1);
+        }
+        printf("%ld\n", count);
+    }
+    return 0;
+}
+```
+
+# 1016 一的个数
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+题目描述
+NowCoder总是力争上游，凡事都要拿第一，所以他对“1”这个数情有独钟。爱屋及乌，他也很喜欢包含1的数，例如10、11、12……。不仅如此，他同样喜欢任意进制中包含1的数。当然，其中包含1的个数越多他越喜欢。你能帮他统计一下某个数在特定的进制下1的个数吗？
+
+输入描述:
+输入有多组数据，每组数据包含一个正整数n (1≤n≤2147483647)和一个正整数r (2≤r≤16)。
+
+其中n为十进制整数，r为目标进制。
+
+
+输出描述:
+对应每组输入，输出整数n转换成r进制之后，其中包含多少个“1”。
+
+输入例子:
+1 2
+123 16
+
+输出例子:
+1
+0
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    int value = 0, binary = 0, count;
+    while (cin >> value >> binary) {
+        count = 0;
+        while (value >= binary) {
+            if (value % binary == 1) {
+                count++;
+            }
+            value /= binary;
+        }
+        if (value == 1) {
+            count++;
+        }
+        printf("%d\n", count);
+    }
+    return 0;
+}
+```
+
+# 1017 外星人的语言
+
+时间限制 1000 ms 内存限制 32768 KB 代码长度限制 100 KB 判断程序 Standard (来自 小小)
+题目描述
+nowcoder费了很大劲，终于和地外文明联系上。我们地球人通常有10根手指，因此我们习惯用10进制的数，而外星人的手指有16跟、8根等不等的数目，因此他们使用与我们不同的进制。为了方便沟通，需要你开发一款工具，把地球人的10进制转换成外星人的R进制形式。
+
+输入描述:
+输入有多行。
+
+每行包括两个正整数n和R，其中2≤R≤16。
+
+输入直到文件结束为止。
+
+
+输出描述:
+对于每个用例，输出n对应的R进制形式。
+
+超过10进制的数，10用A表示、11用B表示，依次类推。
+
+输入例子:
+1989 2
+1119 16
+
+输出例子:
+11111000101
+45F
+
+```
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    char output[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G'};
+    int result[64], value, binary, idx;
+    while (cin >> value >> binary) {
+        idx = -1;
+        while (value > 0) {
+            result[++idx] = value % binary;
+            value /= binary;
+        }
+        for (int i = idx; i > -1; i--) {
+            printf("%c", output[result[i]]);
+        }
+        printf("\n");
+    }
+    return 0;
+}
+```
